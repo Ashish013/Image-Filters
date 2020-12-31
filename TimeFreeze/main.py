@@ -82,6 +82,6 @@ while(cap.isOpened()):
     if (val == 27):
         break
 
-cv2.imwrite("TimeFreezeFilter.jpg",stitched_img)
+cv2.imwrite("TimeFreezeFilter-Output.jpg",stitched_img)
 cap.release()
 cv2.destroyAllWindows()
