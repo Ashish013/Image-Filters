@@ -3,7 +3,7 @@ import numpy as np
 #from skimage.measure import compare_ssim
 from skimage.metrics import structural_similarity
 
-def generate_ssim_mask(frame,bg):
+def generate_ssim_mask(frame,bg,ksize = 4):
     
     fg = frame
         
@@ -31,7 +31,7 @@ def generate_ssim_mask(frame,bg):
             max_area = cv2.contourArea(cont)
 
     cv2.drawContours(canvas,[cnt],-1, (255, 255, 255),cv2.FILLED)
-    cv2.dilate(canvas,np.ones((7,7),dtype = np.uint8),iterations = 10)
+    cv2.dilate(canvas,np.ones((ksize,ksize),dtype = np.uint8),iterations = 10)
     
     contours,_ = cv2.findContours(canvas,cv2.RETR_TREE,cv2.CHAIN_APPROX_NONE)
     hull = cv2.convexHull(contours[0])
