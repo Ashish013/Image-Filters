@@ -16,23 +16,25 @@ def generate_ssim_mask(frame,bg):
     thresh = cv2.threshold(diff, 0, 255,cv2.THRESH_BINARY_INV | cv2.THRESH_OTSU)[1]
     canvas = np.zeros_like(thresh)
     
+    contours,_ = cv2.findContours(thresh,cv2.RETR_TREE,cv2.CHAIN_APPROX_NONE)
+    
     try:
-        contours,_ = cv2.findContours(thresh,cv2.RETR_TREE,cv2.CHAIN_APPROX_NONE)
         cnt = contours[0]
-        max_area = cv2.contourArea(cnt)
-
-        for cont in contours:
-            if cv2.contourArea(cont) > max_area:
-                cnt = cont
-                max_area = cv2.contourArea(cont)
-
-        cv2.fillPoly(canvas,cnt,(255,255,255))
-        cv2.dilate(canvas,np.ones((5,5),dtype = np.uint8),iterations = 10)
-
-        contours,_ = cv2.findContours(canvas,cv2.RETR_TREE,cv2.CHAIN_APPROX_NONE)
-        hull = cv2.convexHull(contours[0])
-
-        return cv2.drawContours(np.zeros_like(canvas),[hull],-1, (255, 255, 255),cv2.FILLED)
     except:
         return thresh
+    
+    max_area = cv2.contourArea(cnt)
+
+    for cont in contours:
+        if cv2.contourArea(cont) > max_area:
+            cnt = cont
+            max_area = cv2.contourArea(cont)
+
+    cv2.drawContours(canvas,[cnt],-1, (255, 255, 255),cv2.FILLED)
+    cv2.dilate(canvas,np.ones((7,7),dtype = np.uint8),iterations = 10)
+    
+    contours,_ = cv2.findContours(canvas,cv2.RETR_TREE,cv2.CHAIN_APPROX_NONE)
+    hull = cv2.convexHull(contours[0])
+    
+    return cv2.drawContours(canvas,[hull],-1, (255, 255, 255),cv2.FILLED)
     
