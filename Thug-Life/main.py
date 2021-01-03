@@ -6,7 +6,6 @@ ap = argparse.ArgumentParser()
 ap.add_argument("-vi","--video_input",help = "path to input_video")
 args = vars(ap.parse_args())
 
-
 def file_downloader(link,destination,chunk_size = 500):
   '''Helper function to download files using url link via the python requests module'''
   response = requests.get(link,stream = True)
@@ -49,21 +48,24 @@ predictor = dlib.shape_predictor('./shape_predictor_68_face_landmarks.dat')
 
 # Initializes the capture from the source
 if args["video_input"] != None:
-    cap = cv2.VideoCapture(args["vid_input"])
-    fourcc = cv2.VideoWriter_fourcc(*"XVID")
-    writer = cv2.VideoWriter("output.avi",fourcc,cap.get(5),(cap.get(3),cap.get(4)))
+    cap = cv2.VideoCapture(args["video_input"])
+    fourcc = cv2.VideoWriter_fourcc(*'MJPG')
+    writer = cv2.VideoWriter("output.avi",fourcc,cap.get(5),(int(cap.get(3)),int(cap.get(4))))
 else:
     cap = cv2.VideoCapture(0)
 
 while(cap.isOpened()):
     
     ret,frame = cap.read()
-    input_img = frame
     
     if(ret == False):
-        print("Error with camera !")
         break
-        
+    
+    if(np.all(frame) == None):
+        break
+    
+    input_img = frame
+
     try:
         detections = detector(input_img,1)
     except:
@@ -125,7 +127,8 @@ while(cap.isOpened()):
     # Breaks the feed loop when ESC is pressed
     if(cv2.waitKey(1) == 27):
         break
-        
+   
+    
 cv2.imwrite("thug-life.jpg",input_img)
 
 # Releases the resources allocated to the program 
