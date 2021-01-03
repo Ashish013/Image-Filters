@@ -6,8 +6,8 @@ from rcnn_utils import generate_rcnn_mask
 from utils import files_downloader
 
 ap = argparse.ArgumentParser(description = "Filter that captures instances, every '-time' seconds")
-ap.add_argument("-v","--vid_input",help = "Video input path",type = str)
 ap.add_argument("-m","--method",required = True, help = "Method used for detection",choices = ["ssim","rcnn"], type = str)
+ap.add_argument("-v","--vid_input",help = "Video input path",type = str)
 ap.add_argument("-t","--time",help = "Time difference between 2 instances", default = 5, type = int)
 ap.add_argument("-f","--font", help = "Font to display timer", default = "cv2.FONT_HERSHEY_COMPLEX", type = str)
 args = vars(ap.parse_args())
@@ -33,6 +33,11 @@ first_frame = False
 while(cap.isOpened()):
     ret,frame = cap.read()
     
+    if ret == False:
+        break
+    if np.all(frame) == None:
+        break
+        
     if(first_snap == False):
         stitched_img = frame
         
@@ -82,6 +87,6 @@ while(cap.isOpened()):
     if (val == 27):
         break
 
-cv2.imwrite("TimeFreezeFilter-Output.jpg",stitched_img)
+cv2.imwrite("TimeFreezeFilter.jpg",stitched_img)
 cap.release()
 cv2.destroyAllWindows()
